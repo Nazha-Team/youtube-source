@@ -113,13 +113,14 @@ public abstract class NonMusicClient implements Client {
         CipherManager cipherManager = source.getCipherManager();
 
         ClientConfig config = getBaseClientConfig(httpInterface);
-        if (status == null) {
+            if (status == null) {
             // Only add embed info if the status is not NON_EMBEDDABLE.
-        // Skip embed workaround for OAuth-supporting clients to avoid EMBEDDER_IDENTITY_DENIED errors.
-        // OAuth authentication should be sufficient without pretending to be an embedded player.
-        if (!supportsOAuth() && (status == null || status != PlayabilityStatus.NON_EMBEDDABLE)) {
-            config.withClientField("clientScreen", "EMBED")
-                .withThirdPartyEmbedUrl("https://google.com");
+            // Skip embed workaround for OAuth-supporting clients to avoid EMBEDDER_IDENTITY_DENIED errors.
+            // OAuth authentication should be sufficient without pretending to be an embedded player.
+            if (!supportsOAuth() && status != PlayabilityStatus.NON_EMBEDDABLE) {
+                config.withClientField("clientScreen", "EMBED")
+                    .withThirdPartyEmbedUrl("https://google.com");
+            }
         }
 
         config.withRootField("videoId", videoId)
