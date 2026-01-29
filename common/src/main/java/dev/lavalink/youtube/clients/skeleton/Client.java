@@ -83,14 +83,12 @@ public interface Client {
                 }
 
                 if (loginReason.contains("This video may be inappropriate for some users")) {
-                    throw new FriendlyException("This video requires age verification.", SUSPICIOUS, null);
+                    // Changed from SUSPICIOUS to COMMON to allow fallback to other clients
+                    throw new FriendlyException("This video requires age verification.", COMMON, null);
                 }
 
-                // I'm not sure if there's any conditions under which this branch can be reached,
-                // but we should cover all cases. There's nothing more that this client can do,
-                // so we can only hope that the next clients in the chain will catch this.
-                // Although in the case of age verification, only TV_EMBEDDED can bypass that,
-                // and even then, success is not guaranteed.
+                // MODIFIED: Changed from SUSPICIOUS to COMMON severity to allow client fallback
+                // This allows the next client in the chain to attempt loading
                 throw new FriendlyException("This video requires login.", COMMON, null);
             case "CONTENT_CHECK_REQUIRED":
                 throw new FriendlyException(getUnplayableReason(playabilityStatus), COMMON, null);
@@ -103,6 +101,7 @@ public interface Client {
 
                 throw new FriendlyException(getUnplayableReason(playabilityStatus), COMMON, null);
             default:
+                // MODIFIED: Changed from SUSPICIOUS to COMMON to allow fallback
                 throw new FriendlyException("This video cannot be viewed anonymously.", COMMON, null);
         }
     }
